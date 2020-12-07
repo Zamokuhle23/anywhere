@@ -1,0 +1,138 @@
+{% extends 'blog/base.html' %}
+{% load crispy_forms_filters %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+
+  <article class="media content-section">
+  <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="{% url 'user-posts' object.author.username %}">{{ object.author }}</a>
+      <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
+        {% if object.author == user %}
+<object align="right">
+            <div class="dropdown">
+  <button data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-three-dots" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+</svg>
+</svg>
+
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item" href="{% url 'post-update' object.id %}">Edit</a>
+    <a class="dropdown-item" href="{% url 'post-delete' object.id %}">delete</a>
+
+  </div>
+</div>
+</object>
+
+
+        {% endif %}
+    </div>
+  <div>
+    <h2 class="article-title">{{ object.title }}</h2>
+    <p class="article-content">{{ object.content | safe}}</p>
+  </div>
+
+
+  <a href="#" onClick="document.getElementById('likebutton').submit()">Like This Post</a> {{object.num_likes}}   |
+      <a href="#" onClick="document.getElementById('dislikebutton').submit()">Dislike This Post</a> {{object.num_dislikes}}
+
+
+<form id="likebutton" method="POST" action="/posts/{{object.id}}/preference/1/">
+{% csrf_token %}
+<input type="hidden">
+</form>
+
+<form id="dislikebutton" method="POST" action="/posts/{{object.id}}/preference/2/">
+{% csrf_token %}
+<input type="hidden">
+</form>
+  </div>
+
+   </article>
+
+ <div class="row pl-3">
+        <div class="col-12 col-md-6 pl-0">
+         <h3 class="white-important mb-3">
+             Comments
+         </h3>
+        {% for comment in comments %}
+
+       <article class="media content-section">
+                <div style="width: 100%; word-break: break-all;" class="hovered-tweet-comment-in">
+                <div class="pb-2 row m-0" style="width: 100%; margin-right: 2px !important;">
+                   <div
+                           style="padding-left: 0px !important;"
+                           class="col-8 no-padding d-flex align-items-center">
+                       <img
+                           class="rounded-circle mr-2"
+                           style="width: 35px; height: 35px;"
+                           src="{{ comment.author.profile.image.url }}">
+                       <a class="mr-2 white-important" href="{% url 'user-posts' comment.author.username %}">
+                           {{ comment.author }}
+                       </a>
+                   </div>
+
+                            {% if comment.author == user %}
+                                <div class="topright">
+<object align="right">
+            <div class="dropdown">
+  <button data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-three-dots" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+</svg>
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item" href="{% url 'comment-update' comment.id %}">Edit</a>
+    <a class="dropdown-item" href="{% url 'comment-delete' comment.id %}">delete</a>
+
+  </div>
+</div>
+</object>
+</div>
+                                </div>
+
+        {% endif %}
+
+
+             <div
+                        class="mb-2"
+                        style="width: 100%; height: 1px; background-color: rgba(255, 255, 255, 0.1)"></div>
+                <a style="color:black !important;">
+                    <p>
+                        {{ comment.content }}
+                    </p>
+                </a>
+                    <small class="white-important d-flex full-width flex-row-reverse" style="color:red" >
+                        {{ comment.date_posted | date:"H:i l, d.m.y" }}
+                    </small>
+
+            </div>
+
+</article>
+        {% endfor %}
+
+</div>
+
+     {% if user is not None %}
+            <div class="col-12 col-md-6 pl-0 pl-md-3 pr-3">
+                <h3 class="white-important mb-3">
+                    Add a comment
+                </h3>
+                <form method="POST">
+                    {% csrf_token %}
+                    <fieldset class="form-group">
+                        {{ form | crispy }}
+                    </fieldset>
+                    <div class="form-group">
+                        <button class="btn btn-outline-primary" type="submit">Submit comment</button>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+ </div>
+
+{% endblock content %}

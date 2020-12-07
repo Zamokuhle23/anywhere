@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1> Register page</h1>
+
+      <form action="result" method="post">
+          {% csrf_token %}
+  <div class="form-group">
+    <select name="gender">
+  <option disabled="true" selected>Please Select your Gender</option>
+  <option >Male</option>
+  <option>Female</option>
+  <option>Others</option>
+</select>
+  </div>
+      </form>
+{% endblock  %}
